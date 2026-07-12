@@ -50,3 +50,12 @@ class RegisterSerializer(serializers.ModelSerializer):
 
         validated_data.pop("confirmed_password", None)
         return User.objects.create_user(**validated_data)
+
+
+class LoginSerializer(serializers.Serializer):
+    """
+    Serializer for user login.
+    """
+
+    username = serializers.CharField()
+    password = serializers.CharField(write_only=True)
