@@ -1,22 +1,25 @@
 from rest_framework import status
 from rest_framework.generics import CreateAPIView, GenericAPIView
 from rest_framework.response import Response
-
 from .serializers import RegisterSerializer
 from .serializers import LoginSerializer
 from rest_framework import serializers
 from rest_framework.exceptions import AuthenticationFailed
-
 from django.contrib.auth import authenticate
 from rest_framework_simplejwt.tokens import RefreshToken
-
 from accounts.utils import set_auth_cookies
+from rest_framework.permissions import IsAuthenticated
+from accounts.utils import clear_auth_cookies
+from rest_framework.permissions import AllowAny
 
 
 class RegisterView(CreateAPIView):
     """
     View for registering a new user.
     """
+
+    authentication_classes = []
+    permission_classes = [AllowAny]
 
     serializer_class = RegisterSerializer
 
@@ -36,6 +39,8 @@ class LoginView(GenericAPIView):
     View for user login.
     """
 
+    authentication_classes = []
+    permission_classes = [AllowAny]
     serializer_class = LoginSerializer
 
     def post(self, request):
@@ -76,3 +81,34 @@ class LoginView(GenericAPIView):
         set_auth_cookies(response, str(refresh.access_token), str(refresh))
 
         return response
+
+
+class LogoutView(GenericAPIView):
+    """
+    View for user logout.
+    """
+
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        refresh_token = request.COOKIES.get("refresh_token")
+
+        self.blacklist_token(refresh_token)
+
+        response = Response(
+            {
+                "detail": "Log-Out successfully! All Tokens will be deleted. Refresh token is now invalid."
+            },
+            status=status.HTTP_200_OK,
+        )
+
+        clear_auth_cookies(response)
+
+        return response
+
+    def blacklist_token(self, refresh_token):
+        if not refresh_token:
+            return
+
+        token = RefreshToken(refresh_token)
+        token.blacklist()
