@@ -7,10 +7,14 @@ from rest_framework import serializers
 from rest_framework.exceptions import AuthenticationFailed
 from django.contrib.auth import authenticate
 from rest_framework_simplejwt.tokens import RefreshToken
-from accounts.utils import set_auth_cookies
 from rest_framework.permissions import IsAuthenticated
-from accounts.utils import clear_auth_cookies
 from rest_framework.permissions import AllowAny
+from rest_framework_simplejwt.exceptions import TokenError
+from accounts.utils import (
+    clear_auth_cookies,
+    set_access_cookie,
+    set_auth_cookies,
+)
 
 
 class RegisterView(CreateAPIView):
@@ -112,3 +116,33 @@ class LogoutView(GenericAPIView):
 
         token = RefreshToken(refresh_token)
         token.blacklist()
+
+
+class TokenRefreshView(GenericAPIView):
+    """
+    View for refreshing the access token.
+    """
+
+    def post(self, request):
+        refresh_token = request.COOKIES.get("refresh_token")
+
+        access_token = self.create_access_token(refresh_token)
+
+        response = Response(
+            {"detail": "Token refreshed"},
+            status=status.HTTP_200_OK,
+        )
+
+        set_access_cookie(response, access_token)
+
+        return response
+
+    def create_access_token(self, refresh_token):
+        if not refresh_token:
+            raise AuthenticationFailed("Refresh token is invalid or missing.")
+
+        try:
+            token = RefreshToken(refresh_token)
+            return str(token.access_token)
+        except TokenError:
+            raise AuthenticationFailed("Refresh token is invalid.")
