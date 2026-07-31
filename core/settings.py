@@ -1,5 +1,8 @@
 from pathlib import Path
 from datetime import timedelta
+from dotenv import load_dotenv
+
+load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -15,8 +18,14 @@ ALLOWED_HOSTS = [
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:4200",
+    "http://127.0.0.1:5500",
 ]
 
+CORS_ALLOW_CREDENTIALS = True
+
+CSRF_TRUSTED_ORIGINS = [
+    "http://127.0.0.1:5500",
+]
 
 INSTALLED_APPS = [
     "django.contrib.admin",
