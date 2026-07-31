@@ -1,3 +1,7 @@
+import os
+import yt_dlp
+
+
 class YouTubeService:
     """
     Handles YouTube video processing.
@@ -6,12 +10,12 @@ class YouTubeService:
     @staticmethod
     def download_audio(url):
         """
-        Downloads the audio from a YouTube video.
+        Downloads the audio of a YouTube video.
         """
 
-        video_info = YouTubeService.get_video_info(url)
+        YouTubeService.get_video_info(url)
 
-        return YouTubeService.extract_audio(video_info)
+        return YouTubeService.extract_audio(url)
 
     @staticmethod
     def get_video_info(url):
@@ -19,16 +23,27 @@ class YouTubeService:
         Retrieves information about a YouTube video.
         """
 
-        return {
-            "url": url,
-        }
+        with yt_dlp.YoutubeDL({}) as ydl:
+            return ydl.extract_info(url, download=False)
 
     @staticmethod
-    def extract_audio(video_info):
+    def extract_audio(video_url):
         """
-        Extracts the audio from a YouTube video.
+        Downloads the audio track of a YouTube video.
         """
 
-        audio_path = "temporary_audio.mp3"
+        output_path = "media/audio"
 
-        return audio_path
+        os.makedirs(output_path, exist_ok=True)
+
+        ydl_opts = {
+            "format": "bestaudio/best",
+            "outtmpl": f"{output_path}/%(id)s.%(ext)s",
+        }
+
+        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+            info = ydl.extract_info(video_url, download=True)
+
+        filename = ydl.prepare_filename(info)
+
+        return filename
