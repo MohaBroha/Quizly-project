@@ -30,6 +30,11 @@ Thumbs.db
 htmlcov/
 .pytest_cache/
 
+# Local development scripts
+test_*.py
+list_models.py
+
 # Migrations (optional, nur wenn vom Kurs erlaubt)
 # */migrations/*
 # !*/migrations/__init__.py
+
