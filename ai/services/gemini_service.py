@@ -1,17 +1,33 @@
+import json
+import os
+
+from dotenv import load_dotenv
+from google import genai
+
+load_dotenv()
+
+
 class GeminiService:
     """
     Handles communication with Gemini.
     """
 
     @staticmethod
-    def generate_quiz_data(url):
+    def generate_quiz(transcript):
         """
-        Generates quiz data from a YouTube URL.
+        Generates quiz data from a transcript.
         """
 
-        transcript = "Temporary transcript."
+        client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
 
-        return GeminiService.generate_quiz(transcript)
+        prompt = GeminiService.build_prompt(transcript)
+
+        response = client.models.generate_content(
+            model="gemini-flash-latest",
+            contents=prompt,
+        )
+
+        return json.loads(response.text)
 
     @staticmethod
     def build_prompt(transcript):
@@ -25,33 +41,24 @@ Create a quiz based on the following transcript.
 Transcript:
 {transcript}
 
-Return:
-- title
-- description
-- questions
-- four options per question
-- correct answer
+Return ONLY valid JSON.
+
+Structure:
+
+{{
+  "title": "...",
+  "description": "...",
+  "questions": [
+    {{
+      "question_title": "...",
+      "question_options": [
+        "...",
+        "...",
+        "...",
+        "..."
+      ],
+      "answer": "..."
+    }}
+  ]
+}}
 """
-
-    @staticmethod
-    def mock_response():
-        """
-        Returns mock quiz data.
-        """
-
-        return {
-            "title": "Test Quiz",
-            "description": "Temporary quiz description.",
-            "questions": [
-                {
-                    "question_title": "Temporary question",
-                    "question_options": [
-                        "Option A",
-                        "Option B",
-                        "Option C",
-                        "Option D",
-                    ],
-                    "answer": "Option A",
-                }
-            ],
-        }
