@@ -1,4 +1,5 @@
 from ai.services.youtube_service import YouTubeService
+import whisper
 
 
 class WhisperService:
@@ -19,7 +20,11 @@ class WhisperService:
     @staticmethod
     def transcribe_audio(audio_file):
         """
-        Transcribes an audio file.
+        Transcribes an audio file using Whisper.
         """
 
-        return "Temporary transcript."
+        model = whisper.load_model("base")
+
+        result = model.transcribe(audio_file)
+
+        return result["text"]
