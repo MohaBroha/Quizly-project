@@ -51,7 +51,7 @@ class QuizListCreateView(generics.ListCreateAPIView):
         )
 
 
-class QuizDetailView(generics.RetrieveUpdateAPIView):
+class QuizDetailView(generics.RetrieveUpdateDestroyAPIView):
     """
     Retrieves and updates a single quiz of the authenticated user.
     """
