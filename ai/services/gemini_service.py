@@ -22,10 +22,12 @@ class GeminiService:
 
         prompt = GeminiService.build_prompt(transcript)
 
+        print("Calling Gemini...")
         response = client.models.generate_content(
-            model="gemini-flash-latest",
+            model="gemini-2.5-flash",
             contents=prompt,
         )
+        print("Gemini response:", repr(response.text))
 
         return json.loads(response.text)
 

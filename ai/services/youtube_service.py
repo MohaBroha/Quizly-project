@@ -7,6 +7,12 @@ class YouTubeService:
     Handles YouTube video processing.
     """
 
+    BASE_YDL_OPTS = {
+        "remote_components": ["ejs:github"],
+        "js_runtimes": {"node": {}},
+        "cookiefile": "/home/moha/youtube_cookies.txt",
+    }
+
     @staticmethod
     def download_audio(url):
         """
@@ -14,7 +20,6 @@ class YouTubeService:
         """
 
         YouTubeService.get_video_info(url)
-
         return YouTubeService.extract_audio(url)
 
     @staticmethod
@@ -23,7 +28,7 @@ class YouTubeService:
         Retrieves information about a YouTube video.
         """
 
-        with yt_dlp.YoutubeDL({}) as ydl:
+        with yt_dlp.YoutubeDL(YouTubeService.BASE_YDL_OPTS) as ydl:
             return ydl.extract_info(url, download=False)
 
     @staticmethod
@@ -33,10 +38,10 @@ class YouTubeService:
         """
 
         output_path = "media/audio"
-
         os.makedirs(output_path, exist_ok=True)
 
         ydl_opts = {
+            **YouTubeService.BASE_YDL_OPTS,
             "format": "bestaudio/best",
             "outtmpl": f"{output_path}/%(id)s.%(ext)s",
         }
@@ -44,6 +49,4 @@ class YouTubeService:
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
             info = ydl.extract_info(video_url, download=True)
 
-        filename = ydl.prepare_filename(info)
-
-        return filename
+        return ydl.prepare_filename(info)

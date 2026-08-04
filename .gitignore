@@ -34,7 +34,10 @@ htmlcov/
 test_*.py
 list_models.py
 
+# YouTube cookies
+youtube_cookies.txt
+*.cookies.txt
+
 # Migrations (optional, nur wenn vom Kurs erlaubt)
 # */migrations/*
 # !*/migrations/__init__.py
-

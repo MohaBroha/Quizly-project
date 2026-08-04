@@ -29,10 +29,21 @@ class QuizListCreateView(generics.ListCreateAPIView):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
-        quiz = QuizService.create_quiz(
-            request.user,
-            serializer.validated_data["url"],
-        )
+        try:
+            quiz = QuizService.create_quiz(
+                request.user,
+                serializer.validated_data["url"],
+            )
+        except yt_dlp.utils.DownloadError:
+            return Response(
+                {
+                    "detail": (
+                        "Dieses YouTube-Video kann momentan nicht verarbeitet werden. "
+                        "Bitte versuche ein anderes Video."
+                    )
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
         return Response(
             QuizSerializer(quiz).data,
