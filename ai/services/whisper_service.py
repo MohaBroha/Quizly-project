@@ -1,6 +1,8 @@
 from ai.services.youtube_service import YouTubeService
 import whisper
 
+MODEL = whisper.load_model("base")
+
 
 class WhisperService:
     """
@@ -23,8 +25,6 @@ class WhisperService:
         Transcribes an audio file using Whisper.
         """
 
-        model = whisper.load_model("base")
-
-        result = model.transcribe(audio_file)
+        result = MODEL.transcribe(audio_file)
 
         return result["text"]

@@ -10,8 +10,22 @@ class YouTubeService:
     BASE_YDL_OPTS = {
         "remote_components": ["ejs:github"],
         "js_runtimes": {"node": {}},
-        "cookiefile": "/home/moha/youtube_cookies.txt",
     }
+
+    @staticmethod
+    def get_ydl_options():
+        """
+        Returns yt-dlp options and uses cookies if a cookie file exists.
+        """
+
+        ydl_opts = dict(YouTubeService.BASE_YDL_OPTS)
+
+        cookie_path = os.getenv("YTDLP_COOKIEFILE")
+
+        if cookie_path and os.path.exists(cookie_path):
+            ydl_opts["cookiefile"] = cookie_path
+
+        return ydl_opts
 
     @staticmethod
     def download_audio(url):
@@ -28,7 +42,7 @@ class YouTubeService:
         Retrieves information about a YouTube video.
         """
 
-        with yt_dlp.YoutubeDL(YouTubeService.BASE_YDL_OPTS) as ydl:
+        with yt_dlp.YoutubeDL(YouTubeService.get_ydl_options()) as ydl:
             return ydl.extract_info(url, download=False)
 
     @staticmethod
@@ -41,7 +55,7 @@ class YouTubeService:
         os.makedirs(output_path, exist_ok=True)
 
         ydl_opts = {
-            **YouTubeService.BASE_YDL_OPTS,
+            **YouTubeService.get_ydl_options(),
             "format": "bestaudio/best",
             "outtmpl": f"{output_path}/%(id)s.%(ext)s",
         }

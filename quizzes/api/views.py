@@ -1,7 +1,7 @@
 from rest_framework import generics, status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-
+import yt_dlp
 from ai.services.quiz_service import QuizService
 from quizzes.models import Quiz
 from quizzes.api.serializers import (
