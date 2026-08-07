@@ -131,13 +131,14 @@ source venv/bin/activate
 pip install -r requirements.txt
 ```
 
-## 4. Create a .env file
+## 4. Create a `.env` file
 
-Create a file named `.env` in the project root.
+Copy `.env.template` to `.env` and replace the placeholder values with your own.
 
 Example:
 
 ```env
+SECRET_KEY=YOUR_SECRET_KEY
 GEMINI_API_KEY=YOUR_GEMINI_API_KEY
 ```
 

@@ -38,6 +38,8 @@ class GeminiService:
         return f"""
 Create a quiz based on the following transcript.
 
+Generate exactly 10 multiple-choice questions.
+
 Transcript:
 {transcript}
 
@@ -61,4 +63,10 @@ Structure:
     }}
   ]
 }}
+
+Requirements:
+- Generate exactly 10 questions.
+- Each question must have exactly 4 answer options.
+- Only one answer may be correct.
+- The questions should cover different parts of the transcript.
 """
