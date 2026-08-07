@@ -27,7 +27,15 @@ class GeminiService:
             contents=prompt,
         )
 
-        return json.loads(response.text)
+        text = (response.text or "").strip()
+
+        if text.startswith("```json"):
+            text = text.removeprefix("```json").strip()
+
+        if text.endswith("```"):
+            text = text.removesuffix("```").strip()
+
+        return json.loads(text)
 
     @staticmethod
     def build_prompt(transcript):
@@ -65,7 +73,11 @@ Structure:
 }}
 
 Requirements:
-- Generate exactly 10 questions.
+- Return ONLY valid JSON.
+- Do not wrap the response in markdown.
+- Do not use markdown code fences.
+- Do not include explanations or additional text.
+- Generate exactly 10 multiple-choice questions.
 - Each question must have exactly 4 answer options.
 - Only one answer may be correct.
 - The questions should cover different parts of the transcript.
