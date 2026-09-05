@@ -9,21 +9,24 @@ class YouTubeService:
 
     BASE_YDL_OPTS = {
         "remote_components": ["ejs:github"],
-        "js_runtimes": {"node": {}},
     }
 
     @staticmethod
     def get_ydl_options():
         """
-        Returns yt-dlp options and uses cookies if a cookie file exists.
+        Returns yt-dlp options and uses proxy and cookies if configured.
         """
 
         ydl_opts = dict(YouTubeService.BASE_YDL_OPTS)
 
         cookie_path = os.getenv("YTDLP_COOKIEFILE")
+        proxy_url = os.getenv("YTDLP_PROXY")
 
         if cookie_path and os.path.exists(cookie_path):
             ydl_opts["cookiefile"] = cookie_path
+
+        if proxy_url:
+            ydl_opts["proxy"] = proxy_url
 
         return ydl_opts
 
