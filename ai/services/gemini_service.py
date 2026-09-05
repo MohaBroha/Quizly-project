@@ -1,10 +1,14 @@
 import json
+import logging
 import os
 
 from dotenv import load_dotenv
 from google import genai
 
 load_dotenv()
+
+
+logger = logging.getLogger(__name__)
 
 
 class GeminiService:
@@ -18,24 +22,28 @@ class GeminiService:
         Generates quiz data from a transcript.
         """
 
-        client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
+        try:
+            client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
 
-        prompt = GeminiService.build_prompt(transcript)
+            prompt = GeminiService.build_prompt(transcript)
 
-        response = client.models.generate_content(
-            model="gemini-3.6-flash",
-            contents=prompt,
-        )
+            response = client.models.generate_content(
+                model="gemini-3.6-flash",
+                contents=prompt,
+            )
 
-        text = (response.text or "").strip()
+            text = (response.text or "").strip()
 
-        if text.startswith("```json"):
-            text = text.removeprefix("```json").strip()
+            if text.startswith("```json"):
+                text = text.removeprefix("```json").strip()
 
-        if text.endswith("```"):
-            text = text.removesuffix("```").strip()
+            if text.endswith("```"):
+                text = text.removesuffix("```").strip()
 
-        return json.loads(text)
+            return json.loads(text)
+        except Exception:
+            logger.exception("Gemini quiz generation or JSON parsing failed")
+            raise
 
     @staticmethod
     def build_prompt(transcript):
